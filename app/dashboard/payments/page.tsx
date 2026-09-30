@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = 'force-dynamic';
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -66,7 +66,8 @@ function formatDate(date: string) {
   return formatted.replace(".", "");
 }
 
-export default function PaymentsPage() {
+// 1. Composant principal contenant toute la logique
+function PaymentsContent() {
   const supabase = useMemo(() => createClient(), []);
   const searchParams = useSearchParams();
 
@@ -751,5 +752,20 @@ export default function PaymentsPage() {
         )}
       </main>
     </div>
+  );
+}
+
+// 2. Exportation par défaut enveloppée dans un Suspense
+export default function PaymentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#FAFAF8]">
+          <Loader2 className="h-8 w-8 animate-spin text-[#5B5CE2]" />
+        </div>
+      }
+    >
+      <PaymentsContent />
+    </Suspense>
   );
 }
